@@ -1,0 +1,26 @@
+resources:
+- name: src
+  type: git
+  source:
+    uri: https://github.com/supershabam/vulcan
+    branch: master
+
+jobs:
+- name: glide
+  plan:
+  - get: src
+    trigger: true
+  - task: glide
+    file: src/ci/glide.yml
+    params:
+      S3_BUCKET: do-vulcan
+      S3_PATH: /glide
+      AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
+      AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
+
+- name: test
+  plan:
+  - get: src
+  - get: glide
+  - task: test
+    file: src/ci/test.yml
