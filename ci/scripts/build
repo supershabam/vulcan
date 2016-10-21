@@ -2,9 +2,12 @@
 
 set -e -u -x
 
-pushd glide
+target=$(pwd)/build/vulcan_linux_amd64
+mkdir -p $GOPATH/src/github.com/digitalocean
+ln -s $(pwd)/glide $GOPATH/src/github.com/digitalocean/vulcan
+
+pushd $GOPATH/src/github.com/digitalocean/vulcan
   git_summary=$(git describe --tags --dirty --always)
   go_version=$(go version)
-
   GOOS="linux" GOARCH="amd64" go build -ldflags="-X 'main.gitSummary=$git_summary' -X 'main.goVersion=$go_version'" -o ../build/vulcan_linux_amd64 main.go
 popd
