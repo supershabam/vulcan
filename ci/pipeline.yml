@@ -31,4 +31,3 @@ jobs:
   - put: docker
     params:
       build: build
-      dockerfile: src/ci/build.dockerfile

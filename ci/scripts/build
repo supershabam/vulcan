@@ -11,3 +11,6 @@ pushd $GOPATH/src/github.com/digitalocean/vulcan
   go_version=$(go version)
   GOOS="linux" GOARCH="amd64" go build -ldflags="-X 'main.gitSummary=$git_summary' -X 'main.goVersion=$go_version'" -o ../build/vulcan_linux_amd64 main.go
 popd
+
+# hack to put dockerfile into build context because I don't understand concourse yet
+cp src/ci/build.dockerfile build/Dockerfile
