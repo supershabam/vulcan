@@ -1,0 +1,23 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: supershabam/concourse-glide-cache
+    tag: latest
+
+inputs:
+- name: src
+
+outputs:
+- name: cache
+
+params:
+  S3_BUCKET: {{ S3_BUCKET }}
+  S3_PATH: {{ S3_PATH }}
+  AWS_ACCESS_KEY_ID: {{ AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: {{ AWS_SECRET_ACCESS_KEY }}
+
+run:
+  path: src/ci/scripts/glide
