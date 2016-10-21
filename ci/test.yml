@@ -1,0 +1,15 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: golan
+    tag: 1.7.3
+
+inputs:
+- name: src
+- name: glide
+
+run:
+  path: src/ci/scripts/test

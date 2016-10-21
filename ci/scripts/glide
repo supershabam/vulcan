@@ -2,14 +2,14 @@
 
 set -e -u -x
 
-# glide installs golang depedencies attempting to use a cache from s3
-# but falling back to running a glide install and writing that result
-# to s3 for next time.
+# glide installs golang depedencies. It attempts to preserve glide's 
+# cache directory between runs by storing this directory on s3 after
+# a successful glide install. The file on s3 uses the glide.lock file's
+# "hash" value as the filename, so that if glide dependencies are updated,
+# a new cache is used/created.
 #
-# glide uses the "hash" value from glide.lock as the cache key.
-#
-# inputs: src/glide.lock
-# outputs: cache/cache.tar.gz
+# inputs: src - vulcan source directory
+# outputs: output - vulcan source now with a populated vendor directory
 # env vars: 
 #   S3_BUCKET
 #   S3_PATH
@@ -18,11 +18,33 @@ set -e -u -x
 
 hash=$(cat src/glide.lock | shyaml get-value hash)
 s3_uri="s3://$S3_BUCKET$S3_PATH/$hash.tar.gz"
+cache_file="$(pwd)/cache.tar.gz"
+glide_home="$(pwd)/glide"
 
-if ! aws s3 cp $s3_uri cache/cache.tar.gz &> /dev/null; then
-  pushd src
-    glide --home ../glide install --strip-vendor
-  popd
-  tar czf cache/cache.tar.gz -C glide/ .
-  aws s3 cp cache/cache.tar.gz $s3_uri
+# quicker to git clone from src to output rather than copy
+git clone ./src ./output
+mkdir -p $glide_home
+
+# try to get s3-stored glide cache; capture state
+has_cache=false
+if aws s3 cp $s3_uri $cache_file &> /dev/null; then
+  has_cache=true
+fi
+
+# restore cache so that glide can use it
+if [ "$has_cache" = true ]; then
+  echo ">> restoring glide cache"
+  tar xzf $cache_file -C $glide_home
+fi
+
+# install dependencies, glide will use cache dir if available
+pushd output
+  glide --home $glide_home install --strip-vendor
+popd
+
+# save cache if it didn't exist before
+if [ "$has_cache" = false ]; then
+  echo ">> saving glide cache"
+  tar czf $cache_file -C $glide_home .
+  aws s3 cp $cache_file $s3_uri
 fi
