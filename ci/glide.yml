@@ -11,7 +11,7 @@ inputs:
 - name: src
 
 outputs:
-- name: output
+- name: glide
 
 run:
   path: src/ci/scripts/glide

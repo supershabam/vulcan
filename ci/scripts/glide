@@ -9,20 +9,22 @@ set -e -u -x
 # a new cache is used/created.
 #
 # inputs: src - vulcan source directory
-# outputs: output - vulcan source now with a populated vendor directory
+# outputs: glide - vulcan source now with a populated vendor directory
 # env vars: 
 #   S3_BUCKET
 #   S3_PATH
 #   AWS_ACCESS_KEY_ID
 #   AWS_SECRET_ACCESS_KEY
 
+input=$(pwd/src)
+output=$(pwd/glide)
 hash=$(cat src/glide.lock | shyaml get-value hash)
 s3_uri="s3://$S3_BUCKET$S3_PATH/$hash.tar.gz"
 cache_file="$(pwd)/cache.tar.gz"
-glide_home="$(pwd)/glide"
+glide_home="$(pwd)/home"
 
 # quicker to git clone from src to output rather than copy
-git clone ./src ./output
+git clone $input $output
 mkdir -p $glide_home
 
 # try to get s3-stored glide cache; capture state
@@ -38,7 +40,7 @@ if [ "$has_cache" = true ]; then
 fi
 
 # install dependencies, glide will use cache dir if available
-pushd output
+pushd $output
   glide --home $glide_home install --strip-vendor
 popd
 
