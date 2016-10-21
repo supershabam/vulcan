@@ -4,8 +4,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: golan
-    tag: 1.7.3
+    repository: supershabam/concourse-glide-cache
+    tag: latest
 
 inputs:
 - name: src
