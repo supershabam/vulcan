@@ -2,6 +2,9 @@
 
 set -e -u -x
 
-pushd glide
+mkdir -p $GOPATH/src/github.com/digitalocean
+ln -s $(pwd)/glide $GOPATH/src/github.com/digitalocean/vulcan
+
+pushd $GOPATH/src/github.com/digitalocean/vulcan
   go test $(glide nv)
 popd
