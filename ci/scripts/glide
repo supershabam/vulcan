@@ -16,8 +16,8 @@ set -e -u -x
 #   AWS_ACCESS_KEY_ID
 #   AWS_SECRET_ACCESS_KEY
 
-input=$(pwd/src)
-output=$(pwd/glide)
+input="$(pwd)/src"
+output="$(pwd)/glide"
 hash=$(cat src/glide.lock | shyaml get-value hash)
 s3_uri="s3://$S3_BUCKET$S3_PATH/$hash.tar.gz"
 cache_file="$(pwd)/cache.tar.gz"
