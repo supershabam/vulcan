@@ -6,7 +6,7 @@ resources:
     branch: master
 
 jobs:
-- name: glide
+- name: build
   plan:
   - get: src
     trigger: true
@@ -17,10 +17,5 @@ jobs:
       S3_PATH: /glide
       AWS_ACCESS_KEY_ID: {{aws-access-key-id}}
       AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
-
-- name: test
-  plan:
-  - get: src
-  - get: glide
   - task: test
     file: src/ci/test.yml
