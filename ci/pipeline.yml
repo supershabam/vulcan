@@ -5,6 +5,13 @@ resources:
     uri: https://github.com/supershabam/vulcan
     branch: master
 
+- name: docker
+  type: docker-image
+  source:
+    repository: {{docker-repository}}
+    username: {{docker-username}}
+    password: {{docker-password}}
+
 jobs:
 - name: build
   plan:
@@ -19,3 +26,9 @@ jobs:
       AWS_SECRET_ACCESS_KEY: {{aws-secret-access-key}}
   - task: test
     file: src/ci/test.yml
+  - task: build
+    file: src/ci/build.yml
+  - put: docker
+    params:
+      build: build
+      dockerfile: src/ci/build.dockerfile
